@@ -17,7 +17,7 @@ exports.getDownloadUrl = async function(userUrl, quality = "480p") {
     const response = await axios.get(apiUrl);
 
     if (response.data && response.data.success && response.data.data && response.data.data.downloadUrl) {
-      return response.data.data.downloadUrl;
+      return response.data.data.low;
     } else {
       throw new Error("Video not found or unsupported.");
     }
