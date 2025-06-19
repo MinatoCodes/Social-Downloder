@@ -9,11 +9,11 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/api/download", async (req, res) => {
-  const { url } = req.query;
+  const { url, quality } = req.query;
   if (!url) return res.status(400).json({ success: false, message: "Missing URL" });
 
   try {
-    const videoUrl = await downloader.getDownloadUrl(url);
+    const videoUrl = await downloader.getDownloadUrl(url, quality);
     res.json({ success: true, videoUrl });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
