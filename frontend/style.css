@@ -32,7 +32,8 @@ body {
   font-size: 28px;
 }
 
-.glass-card input {
+.glass-card input,
+.glass-card select {
   width: 100%;
   padding: 14px;
   border: none;
