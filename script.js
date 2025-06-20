@@ -8,7 +8,7 @@ async function download() {
     return;
   }
 
-  // Show loading spinner
+  // Show spinner
   spinner.classList.remove("hidden");
   videoInfo.classList.add("hidden");
 
@@ -19,22 +19,27 @@ async function download() {
     const result = await response.json();
 
     if (!result.status || !result.data || !result.data.high) {
-      throw new Error("No valid video link found in response.");
+      throw new Error("No valid video found");
     }
 
-    // Optional UI update: Show thumbnail and title
+    // Show title & thumbnail
     document.getElementById("videoTitle").innerText = result.data.title || "Untitled";
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    // Redirect to the high quality video URL
-    window.location.href = result.data.high;
+    // Force download
+    const link = document.createElement("a");
+    link.href = result.data.high;
+    link.download = (result.data.title || "video") + ".mp4";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-  } catch (err) {
-    console.error(err);
-    alert("❌ Error downloading video. Please check the link or try again later.");
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error fetching or downloading the video.");
   } finally {
     spinner.classList.add("hidden");
   }
-      }
-  
+        }
+      
