@@ -13,7 +13,7 @@ async function download() {
 
   spinner.classList.remove("hidden");
   videoInfo.classList.add("hidden");
-  ytNotice.classList.add("hidden"); // Hide notice on new request
+  ytNotice.classList.add("hidden"); // hide notice on new try
 
   try {
     const apiUrl = `https://dev-priyanshi.onrender.com/api/alldl?url=${encodeURIComponent(videoUrl)}`;
@@ -28,24 +28,28 @@ async function download() {
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
-    const proxyDownloadUrl = proxyBase + encodeURIComponent(result.data.high);
-
     const isYouTube = /youtube\.com|youtu\.be/.test(videoUrl.toLowerCase());
+    const highUrl = result.data.high;
 
     if (isYouTube) {
       if (!ytNoticeShown) {
         ytNotice.classList.remove("hidden");
         ytNoticeShown = true;
         spinner.classList.add("hidden");
-        return; // Stop here, user must click download again
+        return; // wait for user to click download again
       }
-      // On second click, proceed with download and hide notice
+      // On second click, redirect directly to the high URL (no proxy)
       ytNotice.classList.add("hidden");
       ytNoticeShown = false;
+
+      window.location.href = highUrl;
+      return;
     }
 
-    // Trigger download by redirecting to proxy URL
+    // For other platforms, use proxy
+    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
+    const proxyDownloadUrl = proxyBase + encodeURIComponent(highUrl);
+
     const a = document.createElement("a");
     a.href = proxyDownloadUrl;
     a.download = (result.data.title || "video") + ".mp4";
@@ -59,5 +63,5 @@ async function download() {
   } finally {
     spinner.classList.add("hidden");
   }
-    }
+        }
       
