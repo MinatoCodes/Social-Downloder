@@ -1,17 +1,3 @@
-const videoUrlInput = document.getElementById("videoUrl");
-const spinner = document.getElementById("spinner");
-const qualityWrapper = document.getElementById("qualityWrapper");
-const qualitySelect = document.getElementById("qualitySelect");
-
-videoUrlInput.addEventListener("input", () => {
-  const url = videoUrlInput.value.trim();
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    qualityWrapper.classList.remove("hidden");
-  } else {
-    qualityWrapper.classList.add("hidden");
-  }
-});
-
 async function download() {
   const url = videoUrlInput.value.trim();
   if (!url) return alert("Please enter a video URL.");
@@ -29,13 +15,8 @@ async function download() {
     spinner.classList.add("hidden");
 
     if (data.success && data.url) {
-      // ✅ Create a hidden <a> and trigger download
-      const a = document.createElement("a");
-      a.href = data.url;
-      a.download = ""; // Optional: could be data.filename
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      // ✅ Open the video download link in a new tab
+      window.open(data.url, "_blank");
     } else {
       alert(data.message || "Failed to get download link.");
     }
@@ -45,4 +26,3 @@ async function download() {
     alert("Server error. Please try again later.");
   }
 }
-  
