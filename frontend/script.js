@@ -28,9 +28,14 @@ async function download() {
 
     spinner.classList.add("hidden");
 
-    // ✅ Updated: get direct download URL from response.data.url
     if (data.success && data.url) {
-      window.location.href = data.url;
+      // ✅ Create a hidden <a> and trigger download
+      const a = document.createElement("a");
+      a.href = data.url;
+      a.download = ""; // Optional: could be data.filename
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } else {
       alert(data.message || "Failed to get download link.");
     }
@@ -39,5 +44,5 @@ async function download() {
     console.error("Error:", error);
     alert("Server error. Please try again later.");
   }
-      }
-    
+}
+  
