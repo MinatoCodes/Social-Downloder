@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Downloader</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="glass-card">
@@ -24,6 +24,11 @@
     </div>
 
     <button onclick="download()">Download</button>
+
+    <!-- Notification for YouTube -->
+    <div id="ytNotice" class="yt-notice hidden">
+      🔔 YouTube doesn't allow auto-downloads. Click the download button again to manually download.
+    </div>
 
     <!-- Video Info -->
     <div id="videoInfo" class="video-info hidden">
@@ -46,5 +51,5 @@
 
   <script src="script.js"></script>
 </body>
-        </html>
+  </html>
   
