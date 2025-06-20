@@ -29,7 +29,8 @@ async function download() {
 
     // Force download
     const link = document.createElement("a");
-    link.href = result.data.high;
+    window.location.href = `https://proxy-downloader.onrender.com/download?url=${encodeURIComponent(result.data.high)}`;
+
     link.download = (result.data.title || "video") + ".mp4";
     document.body.appendChild(link);
     link.click();
