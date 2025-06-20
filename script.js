@@ -8,39 +8,41 @@ async function download() {
     return;
   }
 
-  // Show spinner
+  // Show spinner while loading
   spinner.classList.remove("hidden");
   videoInfo.classList.add("hidden");
 
   try {
     const encodedUrl = encodeURIComponent(videoUrl);
     const apiUrl = `https://dev-priyanshi.onrender.com/api/alldl?url=${encodedUrl}`;
+
     const response = await fetch(apiUrl);
     const result = await response.json();
 
     if (!result.status || !result.data || !result.data.high) {
-      throw new Error("No valid video found");
+      throw new Error("No valid video found.");
     }
 
-    // Show title & thumbnail
-    document.getElementById("videoTitle").innerText = result.data.title || "Untitled";
+    // Display video title and thumbnail
+    document.getElementById("videoTitle").innerText = result.data.title || "Untitled Video";
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    // Force download
-    const link = document.createElement("a");
-    window.location.href = `https://proxy-downloader.onrender.com/download?url=${encodeURIComponent(result.data.high)}`;
+    // Prepare download using proxy
+    const proxyUrl = `https://proxy-downloader.onrender.com/download?url=${encodeURIComponent(result.data.high)}`;
 
-    link.download = (result.data.title || "video") + ".mp4";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Force download by navigating to proxy
+    const downloadLink = document.createElement("a");
+    downloadLink.href = proxyUrl;
+    downloadLink.download = (result.data.title || "video") + ".mp4";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
 
   } catch (error) {
-    console.error(error);
-    alert("❌ Error fetching or downloading the video.");
+    console.error("Download error:", error.message);
+    alert("❌ Could not download the video. Please try another link.");
   } finally {
     spinner.classList.add("hidden");
   }
-        }
-      
+}
