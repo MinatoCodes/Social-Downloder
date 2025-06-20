@@ -1,25 +1,38 @@
 const express = require("express");
-const path = require("path");
-const downloder = require("./downloder");
-require("dotenv").config();
+const cors = require("cors");
+const downloader = require("./downloader");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT =  3000;
 
-app.use(express.static(path.join(__dirname, "../public")));
+// Enable CORS for all origins
+app.use(cors());
 
 app.get("/api/download", async (req, res) => {
-  const { url, quality } = req.query;
-  if (!url) return res.status(400).json({ success: false, message: "Missing URL" });
-
   try {
-    const videoUrl = await downloder.getDownloadUrl(url, quality);
-    res.json({ success: true, videoUrl });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    const { url, quality } = req.query;
+
+    if (!url) {
+      return res.status(400).json({ success: false, message: "Missing URL" });
+    }
+
+    const data = await downloader(url, quality);
+
+    if (!data || !data.url) {
+      return res.status(500).json({ success: false, message: "Could not fetch video download URL." });
+    }
+
+    return res.json({
+      success: true,
+      videoUrl: data,
+    });
+  } catch (error) {
+    console.error("Download error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
+    
