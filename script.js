@@ -12,7 +12,7 @@ async function download() {
   videoInfo.classList.add("hidden");
 
   try {
-    // 1. Get metadata + video URLs from API
+    // Step 1: Get video metadata + URLs from API
     const apiUrl = `https://dev-priyanshi.onrender.com/api/alldl?url=${encodeURIComponent(videoUrl)}`;
     const response = await fetch(apiUrl);
     const result = await response.json();
@@ -25,15 +25,14 @@ async function download() {
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    // 2. Detect if URL is YouTube
+    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
+    const proxiedVideoUrl = proxyBase + encodeURIComponent(result.data.high);
+
     const isYouTube = /youtube\.com|youtu\.be/.test(videoUrl.toLowerCase());
 
-    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
-    const videoDownloadUrl = proxyBase + encodeURIComponent(result.data.high);
-
     if (isYouTube) {
-      // 3a. For YouTube: fetch binary and download via Blob
-      const videoResponse = await fetch(videoDownloadUrl);
+      // For YouTube: fetch as arraybuffer and download via blob
+      const videoResponse = await fetch(proxiedVideoUrl);
       if (!videoResponse.ok) throw new Error("Failed to fetch video data");
 
       const videoBuffer = await videoResponse.arrayBuffer();
@@ -52,9 +51,9 @@ async function download() {
       URL.revokeObjectURL(blobUrl);
 
     } else {
-      // 3b. For others: just redirect to proxy-download link to trigger download normally
+      // For other platforms: direct download via proxy link
       const a = document.createElement("a");
-      a.href = videoDownloadUrl;
+      a.href = proxiedVideoUrl;
       a.download = (result.data.title || "video") + ".mp4";
       document.body.appendChild(a);
       a.click();
@@ -67,5 +66,5 @@ async function download() {
   } finally {
     spinner.classList.add("hidden");
   }
-  }
-                                            
+}
+  
