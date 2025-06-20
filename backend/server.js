@@ -3,7 +3,7 @@ const cors = require("cors");
 const downloader = require("./downloader");
 
 const app = express();
-const PORT =  3000;
+const PORT =  10000;
 
 // Enable CORS for all origins
 app.use(cors());
