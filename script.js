@@ -8,14 +8,12 @@ async function download() {
     return;
   }
 
-  // Show spinner while loading
   spinner.classList.remove("hidden");
   videoInfo.classList.add("hidden");
 
   try {
-    const encodedUrl = encodeURIComponent(videoUrl);
-    const apiUrl = `https://dev-priyanshi.onrender.com/api/alldl?url=${encodedUrl}`;
-
+    // 1. Get metadata + video URLs from API
+    const apiUrl = `https://dev-priyanshi.onrender.com/api/alldl?url=${encodeURIComponent(videoUrl)}`;
     const response = await fetch(apiUrl);
     const result = await response.json();
 
@@ -23,26 +21,51 @@ async function download() {
       throw new Error("No valid video found.");
     }
 
-    // Display video title and thumbnail
-    document.getElementById("videoTitle").innerText = result.data.title || "Untitled Video";
+    document.getElementById("videoTitle").innerText = result.data.title || "Untitled";
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    // Prepare download using proxy
-    const proxyUrl = `https://proxy-downloader.onrender.com/download?url=${encodeURIComponent(result.data.high)}`;
+    // 2. Detect if URL is YouTube
+    const isYouTube = /youtube\.com|youtu\.be/.test(videoUrl.toLowerCase());
 
-    // Force download by navigating to proxy
-    const downloadLink = document.createElement("a");
-    downloadLink.href = proxyUrl;
-    downloadLink.download = (result.data.title || "video") + ".mp4";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
+    const videoDownloadUrl = proxyBase + encodeURIComponent(result.data.high);
+
+    if (isYouTube) {
+      // 3a. For YouTube: fetch binary and download via Blob
+      const videoResponse = await fetch(videoDownloadUrl);
+      if (!videoResponse.ok) throw new Error("Failed to fetch video data");
+
+      const videoBuffer = await videoResponse.arrayBuffer();
+      const contentType = videoResponse.headers.get("Content-Type") || "video/mp4";
+
+      const blob = new Blob([videoBuffer], { type: contentType });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = (result.data.title || "video") + ".mp4";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(blobUrl);
+
+    } else {
+      // 3b. For others: just redirect to proxy-download link to trigger download normally
+      const a = document.createElement("a");
+      a.href = videoDownloadUrl;
+      a.download = (result.data.title || "video") + ".mp4";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
 
   } catch (error) {
     console.error("Download error:", error.message);
-    alert("❌ Could not download the video. Please try another link.");
+    alert("Failed to download video.");
   } finally {
     spinner.classList.add("hidden");
   }
-}
+  }
+                                            
