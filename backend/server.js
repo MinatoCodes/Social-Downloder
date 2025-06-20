@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const downloader = require("./downloader");
+const downloder = require("./downloder");
 require("dotenv").config();
 
 const app = express();
