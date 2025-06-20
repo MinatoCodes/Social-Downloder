@@ -1,28 +1,43 @@
 const videoUrlInput = document.getElementById("videoUrl");
 const spinner = document.getElementById("spinner");
+const qualityWrapper = document.getElementById("qualityWrapper");
+const qualitySelect = document.getElementById("qualitySelect");
+
+videoUrlInput.addEventListener("input", () => {
+  const url = videoUrlInput.value.trim();
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    qualityWrapper.classList.remove("hidden");
+  } else {
+    qualityWrapper.classList.add("hidden");
+  }
+});
 
 async function download() {
   const url = videoUrlInput.value.trim();
   if (!url) return alert("Please enter a video URL.");
 
-  spinner.classList.remove("hidden"); // Show loading
+  const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+  const quality = isYouTube ? qualitySelect.value : "high";
+
+  spinner.classList.remove("hidden");
 
   try {
-    const query = new URLSearchParams({ url }); // no quality, backend handles it
+    const query = new URLSearchParams({ url, quality });
     const response = await fetch(`https://social-downloader.onrender.com/api/download?${query.toString()}`);
     const data = await response.json();
 
-    spinner.classList.add("hidden"); // Hide loading
+    spinner.classList.add("hidden");
 
-    if (data.success && data.videoUrl && data.videoUrl.url) {
-      // Redirect to video download URL
-      window.location.href = data.videoUrl.url;
+    // ✅ Updated: get direct download URL from response.data.url
+    if (data.success && data.url) {
+      window.location.href = data.url;
     } else {
       alert(data.message || "Failed to get download link.");
     }
   } catch (error) {
-    console.error("Download error:", error);
     spinner.classList.add("hidden");
+    console.error("Error:", error);
     alert("Server error. Please try again later.");
   }
-            }
+      }
+    
