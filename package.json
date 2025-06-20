@@ -1,7 +1,7 @@
 {
-  "name": "video-downloader-api",
+  "name": "video-downloader-web",
   "version": "1.0.0",
-  "description": "A simple API to download social media videos",
+  "description": "A simple web to download social media videos",
   
   "scripts": {
     "start": "serve ."
