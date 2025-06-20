@@ -28,7 +28,7 @@ async function download() {
     document.getElementById("videoThumbnail").src = result.data.thumbnail || "";
     videoInfo.classList.remove("hidden");
 
-    const proxyBase = "https://your-backend-url.onrender.com/proxy-download?url=";
+    const proxyBase = "https://proxy-downloader.onrender.com/download?url=";
     const proxyDownloadUrl = proxyBase + encodeURIComponent(result.data.high);
 
     const isYouTube = /youtube\.com|youtu\.be/.test(videoUrl.toLowerCase());
