@@ -13,7 +13,7 @@ app.get("/api/download", async (req, res) => {
   if (!url) return res.status(400).json({ success: false, message: "Missing URL" });
 
   try {
-    const videoUrl = await downloader.getDownloadUrl(url, quality);
+    const videoUrl = await downloder.getDownloadUrl(url, quality);
     res.json({ success: true, videoUrl });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
